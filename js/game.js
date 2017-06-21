@@ -8,6 +8,7 @@ Candy.Game = function(game) {
   this._wallGroup = null;
   this._wall = null;
   this._lemmingSPAWN = 10;
+  this._kill = false;
 };
 
 Candy.Game.prototype = {
@@ -43,16 +44,18 @@ Candy.Game.prototype = {
 
     this._wallGroup.forEach(function(wall) {
       wall.enableBody = true;
-      wall.anchor.setTo(0.5, 0.5);
       wall.body.immovable = true;
       wall.body.allowGravity = false;
+      wall.visible = false;
     })
 
   },
 
   update: function() {
 
-    this.physics.arcade.collide(this._lemmingsGroup, this._wallGroup, Candy.lemmings.wallCollide, null, this);
+    this.physics.arcade.collide(this._lemmingsGroup, this._wallGroup, Candy.lemmings.wallCollide, Candy.lemmings.fallCheck, this);
+
+
 
     //only spawn the predetermined number of lemmings
     if(this._lemmingsGroup.length < this._lemmingSPAWN) {
@@ -86,6 +89,9 @@ Candy.lemmings = {
     //enable lemmings to be clicked/tapped
     lemming.inputEnabled = true;
 
+    //add event listener to click/tapped
+    lemming.events.onInputDown.add(this.onClick, this);
+
     //set anchor (for rotation, position etc) to middle of lemmings
     lemming.anchor.setTo(0.5, 0.5);
 
@@ -97,12 +103,24 @@ Candy.lemmings = {
 
   },
 
-    wallCollide: function(lemming) {
-      if(lemming.body.touching.right) {
-        lemming.body.velocity.x = -15;
-      }
-      else if(lemming.body.touching.right) {
-        lemming.body.velocity.x = 15;
-      }
+  wallCollide: function(lemming) {
+    if(lemming.body.touching.right) {
+      lemming.body.velocity.x = -15;
     }
+    else if(lemming.body.touching.right) {
+      lemming.body.velocity.x = 15;
+    }
+
+  },
+
+  fallCheck: function(lemming, wall) {
+    if(lemming.body.velocity.y > 400) {
+      lemming.kill();
+    }
+  },
+
+  onClick: function(lemming) {
+    lemming.tint = rgb(147, 215, 255);
+  }
+
 };
