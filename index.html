@@ -3,15 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <script src="js/vendor/phaser.js"></script>
-  <script src="js/boot.js"></script>
-  <script src="js/load.js"></script>
-  <script src="js/title.js"></script>
-  <script src="js/play.js"></script>
-  <script src="js/game.js"></script>
-  <title>New Platformer!</title>
+  <script src="js/Boot.js"></script>
+  <script src="js/Preloader.js"></script>
+  <script src="js/MainMenu.js"></script>
+  <script src="js/Game.js"></script>
+  <title>The Lemmings Clone</title>
 </head>
 <body>
-  <div id"gameDiv"></div>
+  <script>
+(function() {
+  //initialize the framework
+  var game = new Phaser.Game(800, 480, Phaser.AUTO, 'game');
 
+  //add game states
+  game.state.add('Boot', Candy.Boot);
+  game.state.add('Preloader', Candy.Preloader);
+  game.state.add('MainMenu', Candy.MainMenu);
+  game.state.add('Game', Candy.Game);
+
+  //start the Boot state
+  game.state.start('Boot');
+})();
+</script>
 </body>
 </html>
