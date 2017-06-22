@@ -18,6 +18,9 @@ Candy.Preloader.prototype = {
     this.game.load.spritesheet('lemming', 'assets/sprites/lemming.png', 16, 16);
     this.game.load.spritesheet('wall', 'assets/sprites/wall.png', 16, 16);
 
+    //load buttons
+    this.game.load.spritesheet('button_dig', 'assets/sprites/button_dig.png', 32, 32);
+
   },
 
   create: function() {

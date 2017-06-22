@@ -9,6 +9,11 @@ Candy.Game = function(game) {
   this._wall = null;
   this._lemmingSPAWN = 10;
   this._kill = false;
+  this._lemmingsAlive = null;
+  this._lemmingsAliveCount = null;
+  this._lemmingAction = null;
+  this.buttonDig = null;
+  this._actionSelected = 'None';
 };
 
 Candy.Game.prototype = {
@@ -28,6 +33,9 @@ Candy.Game.prototype = {
 
     //spawn first lemming
     Candy.lemmings.spawnLemming(this);
+
+    // Add the initial number of lemmings in the group
+    this._lemmingsAlive = this._lemmingsGroup.length;
 
     //display tiles for maps
     var map = this.add.tilemap('level');
@@ -49,13 +57,26 @@ Candy.Game.prototype = {
       wall.visible = false;
     })
 
+    //print the number of lemmings alive to the screen
+    this._lemmingsAliveCount = this.add.text(20, 420, 'Lemmings: ' + this._lemmingsAlive, {font: '14px Arial', fill: '#ffffff'});
+    this._actionSelected = this.add.text(20, 440, 'Action Selected: None', {font: '14px Arial', fill: '#ffffff'});
+
+    //dig button
+    this.buttonDig = this.add.button(20, 380, 'button_dig', actionOnClick, this, 2, 1, 0);
+
+    function actionOnClick() {
+      action = 'Dig';
+      console.log('step 1');
+      this._actionSelected.setText('Action Selected: ' + action);
+      this._lemmingAction = action;
+      return;
+    }
+
   },
 
   update: function() {
 
     this.physics.arcade.collide(this._lemmingsGroup, this._wallGroup, Candy.lemmings.wallCollide, Candy.lemmings.fallCheck, this);
-
-
 
     //only spawn the predetermined number of lemmings
     if(this._lemmingsGroup.length < this._lemmingSPAWN) {
@@ -68,6 +89,9 @@ Candy.Game.prototype = {
         this._spawnLemmingsTimer = 0;
         //and spawn a lemming!
         Candy.lemmings.spawnLemming(this);
+        //update text with number of lemmings alive
+        this._lemmingsAlive += 1;
+        this._lemmingsAliveCount.setText('Lemmings: ' + this._lemmingsAlive);
       }
     }
   },
@@ -98,6 +122,10 @@ Candy.lemmings = {
     //set velocity
     lemming.body.velocity.x = 20;
 
+    //set lemming job
+    lemming.digger = false;
+    lemming.parachute = false;
+
     //add lemming to the lemmings group
     game._lemmingsGroup.add(lemming);
 
@@ -115,12 +143,22 @@ Candy.lemmings = {
 
   fallCheck: function(lemming, wall) {
     if(lemming.body.velocity.y > 400) {
+      if(lemming.parachute == true) {
+
+      }
+      else {
       lemming.kill();
+      //update text with number of lemmings alive
+      this._lemmingsAlive -= 1;
+      this._lemmingsAliveCount.setText('Lemmings: ' + this._lemmingsAlive);
+      }
     }
   },
 
-  onClick: function(lemming) {
-    lemming.tint = rgb(147, 215, 255);
+  onClick: function() {
+    console.log(this._lemmingAction);
+    if(this._lemmingAction == 'Dig') {
+      lemming.parachute = true;
+    }
   }
-
 };
